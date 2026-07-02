@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Kost Putri Raisa — Hunian Nyaman Khusus Putri</title>
+<meta name="description" content="Kost Putri Raisa: hunian bersih, aman, dan nyaman khusus putri. Pilih tipe kamar, atur fasilitas, lihat total biaya secara langsung." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;0,600;0,700;0,800;1,500;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          plum: {
+            50: '#F6EEF3',
+            100: '#EADCE4',
+            400: '#8B5D75',
+            600: '#5C3A4C',
+            800: '#3D2A3A',
+            900: '#2E1F2B',
+          },
+          rose: {
+            300: '#E3B4B9',
+            400: '#D9989F',
+            500: '#C97B84',
+            600: '#AD5D68',
+            700: '#8C4750',
+          },
+          sage: {
+            400: '#9BAA8D',
+            500: '#7C8B6F',
+            600: '#616F52',
+          },
+          clay: {
+            500: '#B5533C',
+            600: '#96422F',
+          },
+          sand: {
+            50: '#FFFBF6',
+            100: '#F5EDE6',
+            200: '#EDE1D6',
+          },
+          ink: '#2A2320',
+        },
+        fontFamily: {
+          display: ['Fraunces', 'serif'],
+          body: ['"Plus Jakarta Sans"', 'sans-serif'],
+          mono: ['"Space Mono"', 'monospace'],
+        },
+      }
+    }
+  }
+</script>
+
+<style>
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  }
+
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Plus Jakarta Sans', sans-serif; color: #2A2320; }
+
+  :focus-visible {
+    outline: 2px solid #AD5D68;
+    outline-offset: 2px;
+  }
+
+  /* --- Kwitansi (receipt) signature styling --- */
+  .kwitansi {
+    position: relative;
+    background: #FFFBF6;
+  }
+  .kwitansi::before,
+  .kwitansi::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0;
+    height: 14px;
+    --notch: 14px;
+    background-image: radial-gradient(circle at var(--notch) var(--notch), transparent calc(var(--notch) - 1px), #FFFBF6 calc(var(--notch) - 1px));
+    background-size: calc(var(--notch) * 2) calc(var(--notch) * 2);
+    background-repeat: repeat-x;
+  }
+  .kwitansi::before {
+    top: -13px;
+    background-position: top;
+    transform: scaleY(-1);
+  }
+  .kwitansi::after {
+    bottom: -13px;
+  }
+
+  .dashed-line {
+    background-image: repeating-linear-gradient(to right, #D9989F 0, #D9989F 6px, transparent 6px, transparent 12px);
+    height: 1px;
+  }
+
+  .figure {
+    font-family: 'Space Mono', monospace;
+  }
+
+  @keyframes ticklePulse {
+    0% { transform: scale(1); }
+    35% { transform: scale(1.06); color: #AD5D68; }
+    100% { transform: scale(1); }
+  }
+  .pulse-total { animation: ticklePulse 0.35s ease-out; }
+
+  /* card select state */
+  .room-card { transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease; }
+  .room-card.selected { border-color: #AD5D68; box-shadow: 0 10px 30px -12px rgba(140,71,80,0.35); }
+  .room-card.disabled-card { opacity: 0.55; filter: grayscale(0.3); }
+
+  /* toggle switch */
+  .switch-track { transition: background-color 0.25s ease; }
+  .switch-dot { transition: transform 0.25s ease; }
+  input:checked + .switch-track .switch-dot { transform: translateX(20px); }
+  input:checked + .switch-track { background-color: #96422F; }
+
+  /* upgrade slide-in */
+  .upgrade-panel {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.35s ease, opacity 0.3s ease, margin 0.3s ease;
+  }
+  .upgrade-panel.open {
+    max-height: 220px;
+    opacity: 1;
+  }
+
+  .blob-float { animation: float 7s ease-in-out infinite; }
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-14px) rotate(2deg); }
+  }
+</style>
+</head>
+
+<body class="bg-sand-100 text-ink antialiased">
+
+<!-- ================= NAV ================= -->
+<header class="sticky top-0 z-40 bg-plum-900/95 backdrop-blur border-b border-plum-800/60">
+  <nav class="max-w-6xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
+    <a href="#top" class="font-display text-rose-300 text-xl font-semibold tracking-tight">
+      Kost Putri <span class="italic text-sand-100">Raisa</span>
+    </a>
+    <div class="hidden sm:flex items-center gap-7 text-sm text-sand-100/85 font-medium">
+      <a href="#kamar" class="hover:text-rose-300 transition-colors">Pilih Kamar</a>
+      <a href="#fasilitas" class="hover:text-rose-300 transition-colors">Fasilitas</a>
+      <a href="#kontak" class="hover:text-rose-300 transition-colors">Kontak</a>
+    </div>
+    <a href="#kamar" class="text-sm font-semibold bg-rose-500 hover:bg-rose-600 text-plum-900 rounded-full px-4 py-2 transition-colors">
+      Lihat Kamar
+    </a>
+  </nav>
+</header>
+
+<!-- ================= HERO ================= -->
+<section id="top" class="relative bg-plum-900 overflow-hidden">
+  <div class="absolute -right-24 -top-16 w-[420px] h-[420px] opacity-90 blob-float pointer-events-none">
+    <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+      <path fill="#5C3A4C" d="M126,-146.6C170.7,-119.9,216.8,-95.8,232.3,-58.2C247.9,-20.6,232.9,30.5,206.9,71.5C180.9,112.5,143.9,143.4,101.6,163.6C59.4,183.8,11.9,193.3,-33.6,185.9C-79.2,178.5,-122.9,154.3,-155.4,118.6C-187.9,82.9,-209.2,35.8,-208.9,-10.9C-208.6,-57.6,-186.7,-104,-152,-131.9C-117.3,-159.8,-70,-169.3,-25.6,-165.7C18.9,-162.2,81.3,-173.3,126,-146.6Z" transform="translate(200 200)"/>
+    </svg>
+  </div>
+  <svg class="absolute right-10 top-24 w-40 h-40 opacity-80 hidden sm:block" viewBox="0 0 120 120" fill="none">
+    <rect x="10" y="10" width="100" height="100" rx="6" stroke="#D9989F" stroke-width="2.5"/>
+    <line x1="60" y1="10" x2="60" y2="110" stroke="#D9989F" stroke-width="2.5"/>
+    <line x1="10" y1="60" x2="110" y2="60" stroke="#D9989F" stroke-width="2.5"/>
+  </svg>
+
+  <div class="relative max-w-6xl mx-auto px-5 sm:px-8 pt-16 pb-20 sm:pt-24 sm:pb-28 grid lg:grid-cols-2 gap-10 items-center">
+    <div>
+      <p class="font-display italic text-rose-300 text-lg mb-3">Kos khusus putri &mdash; aman &amp; kekeluargaan</p>
+      <h1 class="font-display text-4xl sm:text-5xl lg:text-[3.2rem] leading-[1.08] font-semibold text-sand-50">
+        Rumah kedua untukmu,<br class="hidden sm:block"> di <span class="text-rose-300">Kost Putri Raisa.</span>
+      </h1>
+      <p class="mt-5 text-sand-100/80 text-base sm:text-lg max-w-md">
+        Kamar bersih, lingkungan tenang, dan tetangga sesama putri yang saling jaga. Atur kamar impianmu dan lihat langsung total biayanya &mdash; tanpa nego berkali-kali.
+      </p>
+      <div class="mt-8 flex flex-wrap items-center gap-4">
+        <a href="#kamar" class="inline-flex items-center gap-2 bg-rose-500 hover:bg-rose-600 text-plum-900 font-semibold rounded-full px-6 py-3.5 transition-colors shadow-lg shadow-rose-900/20">
+          Lihat Kamar
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 5l7 7-7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <a href="#kontak" class="text-sand-100/85 text-sm font-medium underline underline-offset-4 hover:text-rose-300">
+          Lihat lokasi &amp; kontak
+        </a>
+      </div>
+
+      <!-- live availability ticker -->
+      <div class="mt-9 inline-flex flex-wrap items-center gap-3 bg-plum-800/70 border border-plum-400/30 rounded-2xl px-4 py-3 text-sm">
+        <span class="flex items-center gap-2 text-sand-100/90">
+          <span id="dotA" class="w-2 h-2 rounded-full bg-sage-400"></span>
+          Kamar AC: <span id="tickerA" class="font-semibold text-sand-50">Tersedia</span>
+        </span>
+        <span class="w-px h-4 bg-plum-400/40"></span>
+        <span class="flex items-center gap-2 text-sand-100/90">
+          <span class="w-2 h-2 rounded-full bg-sage-400"></span>
+          Kamar Non-AC: <span class="font-semibold text-sand-50">Tersedia</span>
+        </span>
+      </div>
+    </div>
+
+    <!-- decorative "room card" preview -->
+    <div class="relative hidden lg:block">
+      <div class="bg-plum-800/60 border border-plum-400/30 rounded-3xl p-6 backdrop-blur">
+        <div class="rounded-2xl bg-gradient-to-br from-rose-300/25 to-sage-400/15 h-56 flex items-center justify-center">
+          <svg width="140" height="110" viewBox="0 0 140 110" fill="none">
+            <rect x="8" y="30" width="124" height="72" rx="4" stroke="#D9989F" stroke-width="2.5"/>
+            <path d="M8 30 L70 6 L132 30" stroke="#D9989F" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            <rect x="26" y="52" width="30" height="26" rx="2" stroke="#9BAA8D" stroke-width="2"/>
+            <rect x="84" y="60" width="30" height="42" rx="2" stroke="#9BAA8D" stroke-width="2"/>
+          </svg>
+        </div>
+        <p class="mt-5 font-display text-sand-50 text-lg">"Nyaman kaya di rumah, tapi lebih deket ke kampus &amp; kantor."</p>
+        <p class="mt-1 text-sand-100/60 text-sm">&mdash; Penghuni Kost Putri Raisa</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PILIH KAMAR ================= -->
+<section id="kamar" class="max-w-6xl mx-auto px-5 sm:px-8 py-16 sm:py-24">
+  <div class="max-w-xl mb-10">
+    <p class="text-rose-600 font-semibold text-sm tracking-wide uppercase">Pilih Kamar</p>
+    <h2 class="font-display text-3xl sm:text-4xl font-semibold text-plum-900 mt-2">Atur kamarmu, lihat totalnya langsung.</h2>
+    <p class="text-ink/70 mt-3">Pilih salah satu tipe kamar, tambahkan fasilitas yang kamu butuhkan, dan kwitansi simulasi di samping akan menghitung semuanya secara otomatis.</p>
+  </div>
+
+  <!-- demo toggle -->
+  <div class="flex items-center justify-between gap-4 bg-plum-50 border border-rose-300/40 rounded-2xl px-5 py-4 mb-8">
+    <div>
+      <p class="font-semibold text-plum-800 text-sm">Simulasi ketersediaan</p>
+      <p class="text-ink/60 text-sm">Coba ubah status Kamar AC menjadi penuh, dan lihat opsi upgrade muncul di Kamar Non-AC.</p>
+    </div>
+    <label class="relative inline-flex items-center cursor-pointer shrink-0">
+      <input type="checkbox" id="toggleFullAC" class="sr-only peer">
+      <span class="switch-track w-12 h-7 rounded-full bg-sage-500 flex items-center px-1">
+        <span class="switch-dot w-5 h-5 rounded-full bg-white shadow"></span>
+      </span>
+      <span class="ml-3 text-sm font-medium text-plum-800" id="toggleLabel">Kamar AC Tersedia</span>
+    </label>
+  </div>
+
+  <div class="grid lg:grid-cols-[1fr_1fr_360px] gap-6 items-start">
+
+    <!-- CARD A: KAMAR AC -->
+    <div id="cardA" class="room-card selected bg-white rounded-3xl border-2 border-rose-500 p-6 cursor-pointer">
+      <div class="flex items-start justify-between">
+        <div>
+          <p class="text-xs uppercase tracking-wide text-rose-600 font-semibold">Tipe A</p>
+          <h3 class="font-display text-2xl font-semibold text-plum-900 mt-1">Kamar AC</h3>
+        </div>
+        <span id="badgeA" class="text-xs font-semibold px-3 py-1.5 rounded-full bg-sage-500/15 text-sage-600">Tersedia</span>
+      </div>
+
+      <p class="figure text-3xl font-bold text-plum-800 mt-4">Rp 950.000</p>
+      <p class="text-ink/60 text-sm">/ bulan</p>
+
+      <ul class="mt-4 space-y-1.5 text-sm text-ink/70">
+        <li>&bull; AC 3/4 PK</li>
+        <li>&bull; Kasur + lemari</li>
+        <li>&bull; Kamar mandi dalam</li>
+      </ul>
+
+      <label class="mt-5 flex items-center gap-2.5 text-sm text-ink/80 cursor-pointer select-none">
+        <input type="checkbox" id="tvA" class="w-4 h-4 accent-rose-600 rounded">
+        Tambah TV <span class="figure text-ink/50">(+Rp 100.000/bln)</span>
+      </label>
+
+      <button type="button" id="selectA" class="mt-5 w-full text-sm font-semibold rounded-full py-2.5 border-2 border-rose-500 text-rose-600 bg-white">
+        Pilih Kamar AC
+      </button>
+    </div>
+
+    <!-- CARD B: KAMAR NON-AC -->
+    <div id="cardB" class="room-card bg-white rounded-3xl border-2 border-sand-200 p-6 cursor-pointer">
+      <div class="flex items-start justify-between">
+        <div>
+          <p class="text-xs uppercase tracking-wide text-rose-600 font-semibold">Tipe B</p>
+          <h3 class="font-display text-2xl font-semibold text-plum-900 mt-1">Kamar Non-AC</h3>
+        </div>
+        <span class="text-xs font-semibold px-3 py-1.5 rounded-full bg-sage-500/15 text-sage-600">Tersedia</span>
+      </div>
+
+      <p class="figure text-3xl font-bold text-plum-800 mt-4">Rp 650.000</p>
+      <p class="text-ink/60 text-sm">/ bulan</p>
+
+      <ul class="mt-4 space-y-1.5 text-sm text-ink/70">
+        <li>&bull; Kipas angin</li>
+        <li>&bull; Kasur + lemari</li>
+        <li>&bull; Kamar mandi luar (bersama)</li>
+      </ul>
+
+      <!-- conditional upgrade panel -->
+      <div id="upgradePanel" class="upgrade-panel mt-4">
+        <div class="rounded-xl bg-rose-500/10 border border-rose-400/40 px-4 py-3">
+          <label class="flex items-start gap-2.5 text-sm text-plum-800 cursor-pointer select-none">
+            <input type="checkbox" id="upgradeAC" class="w-4 h-4 mt-0.5 accent-rose-600 rounded">
+            <span>
+              <span class="font-semibold">Request Pasang AC (Upgrade)</span><br>
+              <span class="text-ink/60 figure">+Rp 500.000/bln &mdash; karena Kamar AC sedang penuh</span>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <label class="mt-5 flex items-center gap-2.5 text-sm text-ink/80 cursor-pointer select-none">
+        <input type="checkbox" id="tvB" class="w-4 h-4 accent-rose-600 rounded">
+        Tambah TV <span class="figure text-ink/50">(+Rp 100.000/bln)</span>
+      </label>
+
+      <button type="button" id="selectB" class="mt-5 w-full text-sm font-semibold rounded-full py-2.5 border-2 border-sand-200 text-plum-800 bg-white">
+        Pilih Kamar Non-AC
+      </button>
+    </div>
+
+    <!-- KWITANSI CALCULATOR -->
+    <div class="kwitansi rounded-2xl border border-rose-300/50 shadow-xl shadow-plum-900/10 px-6 pt-8 pb-7 lg:sticky lg:top-24">
+      <div class="flex items-center justify-between">
+        <p class="font-display italic text-rose-600 text-lg">Kwitansi Simulasi</p>
+        <span class="text-[11px] figure text-ink/40">No. 001/KPR</span>
+      </div>
+      <p class="text-ink/50 text-xs mt-0.5">Kost Putri Raisa</p>
+
+      <div class="dashed-line my-4"></div>
+
+      <div class="space-y-2 text-sm">
+        <div class="flex justify-between">
+          <span class="text-ink/70">Tipe kamar</span>
+          <span id="lineRoom" class="font-semibold text-plum-800">Kamar AC</span>
+        </div>
+        <div class="flex justify-between figure text-ink/70">
+          <span>Harga dasar</span>
+          <span id="lineBase">Rp 950.000</span>
+        </div>
+        <div id="lineAddons" class="space-y-1"></div>
+      </div>
+
+      <div class="dashed-line my-4"></div>
+
+      <div class="flex justify-between items-end">
+        <span class="text-plum-800 font-semibold">Total / bulan</span>
+        <span id="lineTotal" class="figure text-2xl font-bold text-rose-600">Rp 950.000</span>
+      </div>
+
+      <a id="waOrderBtn" href="#" target="_blank" rel="noopener"
+         class="mt-6 flex items-center justify-center gap-2 w-full bg-sage-500 hover:bg-sage-600 text-white font-semibold rounded-full py-3 transition-colors">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.9-2-1-.2-.1-.4-.1-.6.1-.2.2-.6.8-.8 1-.1.2-.3.2-.5.1-1.4-.6-2.7-1.6-3.7-3-.2-.3-.1-.5.1-.7.2-.2.4-.5.6-.7.2-.2.2-.4.1-.6-.1-.3-.9-2.1-1.1-2.6-.2-.4-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.3-.9 1-.9 2.3s.9 2.7 1 2.9c.1.2 1.7 2.7 4.2 3.7 2.1.9 2.5.7 3 .6.4-.1 1.3-.5 1.5-1.1.2-.5.2-1 .1-1.1-.1-.1-.2-.2-.2-.3zM12 2C6.5 2 2 6.5 2 12c0 1.9.5 3.6 1.4 5.1L2 22l5-1.3c1.4.8 3.1 1.2 5 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2z"/></svg>
+        Pesan Sekarang via WhatsApp
+      </a>
+      <p class="text-ink/40 text-[11px] mt-3 text-center">Kwitansi ini hanya simulasi, bukan bukti pembayaran.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= FASILITAS ================= -->
+<section id="fasilitas" class="bg-plum-50 py-16 sm:py-24">
+  <div class="max-w-6xl mx-auto px-5 sm:px-8">
+    <div class="max-w-xl mb-10">
+      <p class="text-rose-600 font-semibold text-sm tracking-wide uppercase">Fasilitas</p>
+      <h2 class="font-display text-3xl sm:text-4xl font-semibold text-plum-900 mt-2">Semua sudah disiapkan.</h2>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+
+      <div class="bg-white rounded-2xl p-5 border border-sand-200">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#AD5D68" stroke-width="1.8"><path d="M5 12.5a10 10 0 0 1 14 0M8 15.5a6 6 0 0 1 8 0M11 18.5a2 2 0 0 1 2 0M12 21v.01"/></svg>
+        <p class="font-semibold text-plum-800 mt-3">WiFi Kencang</p>
+        <p class="text-ink/60 text-sm mt-1">Internet stabil untuk kerja, kuliah online, dan streaming.</p>
+      </div>
+
+      <div class="bg-white rounded-2xl p-5 border border-sand-200">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#AD5D68" stroke-width="1.8"><path d="M3 18v-6a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v6M3 18h18M5 9V7a2 2 0 0 1 2-2h3v4"/></svg>
+        <p class="font-semibold text-plum-800 mt-3">Kasur &amp; Lemari</p>
+        <p class="text-ink/60 text-sm mt-1">Perabot dasar sudah tersedia, tinggal bawa koper.</p>
+      </div>
+
+      <div class="bg-white rounded-2xl p-5 border border-sand-200">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#AD5D68" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+        <p class="font-semibold text-plum-800 mt-3">Keamanan 24 Jam</p>
+        <p class="text-ink/60 text-sm mt-1">Pagar, CCTV, dan penjaga kos siap sedia sepanjang hari.</p>
+      </div>
+
+      <div class="bg-white rounded-2xl p-5 border border-sand-200">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#AD5D68" stroke-width="1.8"><path d="M4 10h16v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-9ZM7 10V6a5 5 0 0 1 10 0v4"/></svg>
+        <p class="font-semibold text-plum-800 mt-3">Dapur Bersama</p>
+        <p class="text-ink/60 text-sm mt-1">Bisa masak sendiri, kompor dan kulkas tersedia bersama.</p>
+      </div>
+
+      <div class="bg-white rounded-2xl p-5 border border-sand-200">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#AD5D68" stroke-width="1.8"><rect x="3" y="7" width="18" height="12" rx="2"/><path d="M7 7V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"/></svg>
+        <p class="font-semibold text-plum-800 mt-3">Area Parkir Motor</p>
+        <p class="text-ink/60 text-sm mt-1">Parkir motor luas dan aman di dalam area kos.</p>
+      </div>
+
+      <div class="bg-white rounded-2xl p-5 border border-sand-200">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#AD5D68" stroke-width="1.8"><path d="M3 6h18M6 6v13a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V6M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+        <p class="font-semibold text-plum-800 mt-3">Layanan Laundry</p>
+        <p class="text-ink/60 text-sm mt-1">Kerja sama laundry terdekat dengan harga bersahabat.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ================= KONTAK / FOOTER ================= -->
+<footer id="kontak" class="bg-plum-900 text-sand-100/85">
+  <div class="max-w-6xl mx-auto px-5 sm:px-8 py-14 grid sm:grid-cols-2 gap-8">
+    <div>
+      <p class="font-display text-rose-300 text-2xl font-semibold">Kost Putri Raisa</p>
+      <p class="mt-3 text-sm text-sand-100/70 max-w-sm">Jl. Lingkar II, Gg. Taman Sari, Gg. Taman Husada, Tembilahan Kota, Kec. Tembilahan, Kabupaten Indragiri Hilir, Riau 29212, Indonesia</p>
+      <div class="mt-5 space-y-1.5 text-sm">
+        <p>&#128337; Buka 24 jam</p>
+        <p>&#128222; WhatsApp: +62 853-6484-1295</p>
+      </div>
+      <a href="https://maps.app.goo.gl/CPP8m1y2B81psS1Y6" target="_blank" rel="noopener"
+         class="inline-flex items-center gap-2 mt-4 text-sm font-medium text-rose-300 hover:text-rose-200 underline underline-offset-4">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6.1-7-11a7 7 0 0 1 14 0c0 4.9-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+        Lihat di Google Maps
+      </a>
+    </div>
+    <div class="sm:text-right">
+      <p class="text-sm text-sand-100/60">Punya pertanyaan sebelum memesan?</p>
+      <a href="https://wa.me/6285364841295?text=Halo%20Kost%20Putri%20Raisa%2C%20saya%20ingin%20bertanya%20tentang%20ketersediaan%20kamar."
+         target="_blank" rel="noopener"
+         class="inline-flex items-center gap-2 mt-3 bg-rose-500 hover:bg-rose-600 text-plum-900 font-semibold rounded-full px-5 py-2.5 transition-colors">
+        Tanya via WhatsApp
+      </a>
+    </div>
+  </div>
+  <div class="border-t border-plum-800/60 py-5 text-center text-xs text-sand-100/40">
+    &copy; 2026 Kost Putri Raisa. Dibuat dengan &hearts; untuk penghuni.
+  </div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---------- KONFIGURASI (silakan sesuaikan) ----------
+  const CONFIG = {
+    priceA: 950000,       // harga dasar Kamar AC
+    priceB: 650000,       // harga dasar Kamar Non-AC
+    tvAddon: 100000,      // tambahan TV
+    upgradeAC: 500000,    // tambahan upgrade pasang AC di Kamar Non-AC
+    whatsappNumber: "6285364841295", // nomor WA Kost Putri Raisa
+  };
+
+  const fmt = (n) => "Rp " + n.toLocaleString("id-ID");
+
+  // ---------- STATE ----------
+  const state = {
+    roomAFull: false,
+    selectedRoom: "A", // 'A' | 'B'
+    tvA: false,
+    tvB: false,
+    upgradeAC: false,
+  };
+
+  // ---------- ELEMENTS ----------
+  const el = {
+    toggleFullAC: document.getElementById("toggleFullAC"),
+    toggleLabel: document.getElementById("toggleLabel"),
+    dotA: document.getElementById("dotA"),
+    tickerA: document.getElementById("tickerA"),
+    badgeA: document.getElementById("badgeA"),
+    cardA: document.getElementById("cardA"),
+    cardB: document.getElementById("cardB"),
+    selectA: document.getElementById("selectA"),
+    selectB: document.getElementById("selectB"),
+    tvA: document.getElementById("tvA"),
+    tvB: document.getElementById("tvB"),
+    upgradeAC: document.getElementById("upgradeAC"),
+    upgradePanel: document.getElementById("upgradePanel"),
+    lineRoom: document.getElementById("lineRoom"),
+    lineBase: document.getElementById("lineBase"),
+    lineAddons: document.getElementById("lineAddons"),
+    lineTotal: document.getElementById("lineTotal"),
+    waOrderBtn: document.getElementById("waOrderBtn"),
+  };
+
+  // ---------- LOGIC ----------
+  function selectRoom(room) {
+    if (room === "A" && state.roomAFull) return; // tidak bisa pilih kamar penuh
+    state.selectedRoom = room;
+    render();
+  }
+
+  function computeOrder() {
+    let roomName, base, addons = [];
+
+    if (state.selectedRoom === "A") {
+      roomName = "Kamar AC";
+      base = CONFIG.priceA;
+      if (state.tvA) addons.push({ label: "Tambah TV", amount: CONFIG.tvAddon });
+    } else {
+      roomName = "Kamar Non-AC";
+      base = CONFIG.priceB;
+      if (state.roomAFull && state.upgradeAC) {
+        addons.push({ label: "Request Pasang AC (Upgrade)", amount: CONFIG.upgradeAC });
+      }
+      if (state.tvB) addons.push({ label: "Tambah TV", amount: CONFIG.tvAddon });
+    }
+
+    const total = base + addons.reduce((sum, a) => sum + a.amount, 0);
+    return { roomName, base, addons, total };
+  }
+
+  function buildWhatsAppLink(order) {
+    const lines = [
+      "Halo Kost Putri Raisa! Saya ingin memesan kamar dengan detail berikut:",
+      "",
+      "Tipe Kamar: " + order.roomName,
+      "Harga Dasar: " + fmt(order.base) + "/bulan",
+    ];
+    if (order.addons.length > 0) {
+      lines.push("Tambahan:");
+      order.addons.forEach((a) => lines.push("- " + a.label + " (+" + fmt(a.amount) + ")"));
+    }
+    lines.push("", "Total: " + fmt(order.total) + "/bulan", "", "Mohon info ketersediaan dan proses selanjutnya. Terima kasih!");
+    const text = encodeURIComponent(lines.join("\n"));
+    return "https://wa.me/" + CONFIG.whatsappNumber + "?text=" + text;
+  }
+
+  function render() {
+    // --- status kamar AC ---
+    if (state.roomAFull) {
+      el.badgeA.textContent = "Penuh";
+      el.badgeA.className = "text-xs font-semibold px-3 py-1.5 rounded-full bg-clay-500/15 text-clay-600";
+      el.dotA.className = "w-2 h-2 rounded-full bg-clay-500";
+      el.tickerA.textContent = "Penuh";
+      el.cardA.classList.add("disabled-card");
+      el.toggleLabel.textContent = "Kamar AC Penuh";
+      el.selectA.disabled = true;
+      el.selectA.classList.add("cursor-not-allowed");
+      el.upgradePanel.classList.add("open");
+      if (state.selectedRoom === "A") state.selectedRoom = "B"; // auto pindah
+    } else {
+      el.badgeA.textContent = "Tersedia";
+      el.badgeA.className = "text-xs font-semibold px-3 py-1.5 rounded-full bg-sage-500/15 text-sage-600";
+      el.dotA.className = "w-2 h-2 rounded-full bg-sage-400";
+      el.tickerA.textContent = "Tersedia";
+      el.cardA.classList.remove("disabled-card");
+      el.toggleLabel.textContent = "Kamar AC Tersedia";
+      el.selectA.disabled = false;
+      el.selectA.classList.remove("cursor-not-allowed");
+      el.upgradePanel.classList.remove("open");
+      state.upgradeAC = false;
+      el.upgradeAC.checked = false;
+    }
+
+    // --- highlight kartu terpilih ---
+    const isA = state.selectedRoom === "A";
+    el.cardA.classList.toggle("selected", isA);
+    el.cardA.classList.toggle("border-rose-500", isA);
+    el.cardA.classList.toggle("border-sand-200", !isA);
+    el.selectA.classList.toggle("bg-rose-500", isA);
+    el.selectA.classList.toggle("text-white", isA);
+    el.selectA.classList.toggle("text-rose-600", !isA);
+    el.selectA.textContent = isA ? "Kamar Ini Terpilih" : "Pilih Kamar AC";
+
+    el.cardB.classList.toggle("selected", !isA);
+    el.cardB.classList.toggle("border-rose-500", !isA);
+    el.cardB.classList.toggle("border-sand-200", isA);
+    el.selectB.classList.toggle("bg-rose-500", !isA);
+    el.selectB.classList.toggle("text-white", !isA);
+    el.selectB.classList.toggle("text-plum-800", isA);
+    el.selectB.textContent = !isA ? "Kamar Ini Terpilih" : "Pilih Kamar Non-AC";
+
+    // --- hitung & tampilkan kwitansi ---
+    const order = computeOrder();
+    el.lineRoom.textContent = order.roomName;
+    el.lineBase.textContent = fmt(order.base);
+
+    el.lineAddons.innerHTML = "";
+    order.addons.forEach((a) => {
+      const row = document.createElement("div");
+      row.className = "flex justify-between figure text-ink/70";
+      row.innerHTML = `<span>${a.label}</span><span>+${fmt(a.amount)}</span>`;
+      el.lineAddons.appendChild(row);
+    });
+
+    el.lineTotal.textContent = fmt(order.total);
+    el.lineTotal.classList.remove("pulse-total");
+    void el.lineTotal.offsetWidth; // reflow untuk restart animasi
+    el.lineTotal.classList.add("pulse-total");
+
+    el.waOrderBtn.href = buildWhatsAppLink(order);
+  }
+
+  // ---------- EVENTS ----------
+  el.toggleFullAC.addEventListener("change", (e) => {
+    state.roomAFull = e.target.checked;
+    render();
+  });
+
+  el.cardA.addEventListener("click", (e) => {
+    if (e.target.closest("input")) return;
+    selectRoom("A");
+  });
+  el.cardB.addEventListener("click", (e) => {
+    if (e.target.closest("input")) return;
+    selectRoom("B");
+  });
+  el.selectA.addEventListener("click", () => selectRoom("A"));
+  el.selectB.addEventListener("click", () => selectRoom("B"));
+
+  el.tvA.addEventListener("change", (e) => { state.tvA = e.target.checked; render(); });
+  el.tvB.addEventListener("change", (e) => { state.tvB = e.target.checked; render(); });
+  el.upgradeAC.addEventListener("change", (e) => { state.upgradeAC = e.target.checked; render(); });
+
+  // ---------- INIT ----------
+  render();
+})();
+</script>
+
+</body>
+</html>
